@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registration</title>
+  <style>
+    body {
+      background-color: rgb(202, 240, 202);
+    }
+    
+    .picture {
+      border-radius: 8px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 300px;
+      height: 150px;
+    }
+    
+    .type {
+      font-family: Arial;
+      font-size: 20px;
+      font-weight: bold;
+      font-style: italic;
+      margin-left: 720px;
+      margin-bottom: -35px;
+    }
+    
+    .box {
+      font-size: 20px;
+      margin-left: 840px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    
+    .button {
+      font-size: 20px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <img class="picture" src="download.jpg">
+  <p class="type">Username:</p>
+  <input class="box" type="text" id="usernameInput">
+  <p class="type">Password:</p>
+  <input class="box" type="password" id="passwordInput">
+  <button class="button" onclick="register()">Register</button>
+  <button class="button" onclick="login()">Login</button>
+
+  <script>
+    var registeredUsers = [];
+
+    function register() {
+      var username = document.getElementById("usernameInput").value;
+      var password = document.getElementById("passwordInput").value;
+
+      // Check if username and password are not empty and do not contain spaces
+      if (username.trim() === "" || password.trim() === "") {
+        alert("Please enter both username and password.");
+      } else if (username.includes(" ") || password.includes(" ")) {
+        alert("Username and password cannot contain spaces.");
+      } else {
+        // Check if username is already registered
+        if (isUsernameRegistered(username)) {
+          alert("Username already exists. Please choose a different username.");
+        } else {
+          registeredUsers.push({ username: username, password: password });
+          alert("Registration successful! Username: " + username + ", Password: " + password);
+        }
+      }
+    }
+
+    function login() {
+      var username = document.getElementById("usernameInput").value;
+      var password = document.getElementById("passwordInput").value;
+
+      // Check if username and password are not empty and do not contain spaces
+      if (username.trim() === "" || password.trim() === "") {
+        alert("Please enter both username and password.");
+      } else if (username.includes(" ") || password.includes(" ")) {
+        alert("Invalid username or password. Please try again.");
+      } else {
+        // Check if username and password match a registered user
+        var user = registeredUsers.find(function (user) {
+          return user.username === username && user.password === password;
+        });
+
+        // Check if the user is found
+        if (user) {
+          alert("Login successful! Welcome, " + username + "!");
+        } else {
+          alert("Invalid username or password. Please try again.");
+        }
+      }
+    }
+
+    function isUsernameRegistered(username) {
+      return registeredUsers.some(function (user) {
+        return user.username === username;
+      });
+    }
+  </script>
+</body>
+</html>
