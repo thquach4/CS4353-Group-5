@@ -27,17 +27,7 @@ const routes: Routes = [
         loadChildren: () =>
           import('./history/history.module').then((m) => m.HistoryPageModule),
       },
-      {
-       path: 'homepage', // Add this route for the Homepage tab
-        children: [
-          {
-            path: '',
-            loadChildren: () =>
-              import('../homepage/homepage.module').then(m => m.HomepageModule) 
-          }
-        ]
-      },
-    ]
+    ],
   },
 ];
 
