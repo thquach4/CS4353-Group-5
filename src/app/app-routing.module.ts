@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { HomepageComponent } from './homepage/homepage.component';
 import { LoginComponent } from './login/login.component';
 
 /**
@@ -14,9 +15,13 @@ import { LoginComponent } from './login/login.component';
  */
 
 const routes: Routes = [
+  { path: 'login', component: LoginComponent },
+  { path: 'home', component: HomepageComponent }, // line for the homepage
+  { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirect empty path to the homepage
   {
-    path: 'login',
-    component: LoginComponent,
+    path: 'homepage', // Add this route for the Homepage tab,
+        loadChildren: () =>
+          import('./homepage/homepage.module').then(m => m.HomepageModule),
   },
   {
     path: 'detail',
@@ -25,7 +30,7 @@ const routes: Routes = [
   },
   {
     path: '',
-    redirectTo: 'login',
+    redirectTo: '/home',
     pathMatch: 'full',
   },
   {

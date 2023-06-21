@@ -10,7 +10,7 @@ export class TabsPage implements OnInit, OnDestroy {
   constructor(private router: Router) {}
 
   goBack() {
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 
   ngOnInit() {

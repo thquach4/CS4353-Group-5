@@ -1,3 +1,5 @@
+import { HomepageModule } from './homepage/homepage.module';
+
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
@@ -13,7 +15,12 @@ import { LoginComponent } from './login/login.component';
 @NgModule({
   declarations: [AppComponent, LoginComponent],
   entryComponents: [],
-  imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule],
+  imports: [
+    BrowserModule,
+    IonicModule.forRoot(),
+    AppRoutingModule,
+    HomepageModule // Add this line
+  ],
   providers: [
     StatusBar,
     SplashScreen,
