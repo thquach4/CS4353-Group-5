@@ -3,11 +3,16 @@
     <ion-title>Login</ion-title>
   </ion-toolbar>
 </ion-header>
-<p><label for ="username">Username: </label>
-<input type="text" name="username" id ="username" required></p>
-<p><label for ="pw">Password: </label>
-<input type="password" name="pw" id ="pw" required minlength="6" maxlength="20"></p>
-
+<div style="text-align:center">
+<p>
+  <label for ="username">Username: </label>
+<input type="text" name="username" id ="username" required>
+</p>
+<p>
+  <label for ="pw">Password: </label>
+<input type="password" name="pw" id ="pw" required minlength="6" maxlength="20">
+</p>
+</div>
 <ion-content class="ion-padding">
   <div class="button-wrapper">
     <ion-button [routerLink]="['/detail']">Login</ion-button>
