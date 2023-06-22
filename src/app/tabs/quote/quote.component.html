@@ -1,8 +1,36 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Quote</ion-title>
+    <ion-title>Get Quote</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <div class="example-content">Here is the quote page</div>
+  <div class="example-content">
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Gallons Requested</ion-label>
+        <ion-input type="number" required></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Delivery Address</ion-label>
+        <ion-input [value]="clientAddress" (ionChange)="onAddressChange($event)"></ion-input>
+      </ion-item>      
+
+      <ion-item>
+        <ion-label position="stacked">Delivery Date</ion-label>
+        <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD, YYYY"></ion-datetime>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Suggested Price / gallon</ion-label>
+        <ion-input type="number" readonly></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Total Amount Due</ion-label>
+        <ion-input type="number" readonly></ion-input>
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
