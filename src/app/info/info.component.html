@@ -8,21 +8,18 @@
   <div class="example-content">
     <ion-list>
       <ion-item>
-        <ion-label position="stacked">Delivery Address</ion-label>
-        <ion-input
-          [value]="clientAddress"
-          (ionChange)="onAddressChange($event)"
-        ></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Suggested Price / gallon</ion-label>
+        <ion-label position="stacked"><b>Name: </b></ion-label>
         <ion-input></ion-input>
       </ion-item>
 
       <ion-item>
-        <ion-label position="stacked">Total Amount Due</ion-label>
-        <ion-input type="number" readonly></ion-input>
+        <ion-label position="stacked">Address 1:</ion-label>
+        <ion-input></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-label position="stacked">Address 2: </ion-label>
+        <ion-input></ion-input>
       </ion-item>
     </ion-list>
   </div>
