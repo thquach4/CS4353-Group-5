@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { QuotePageComponent } from './info.component';
+import { InfoPageComponent } from './info.component';
 
 import { IonicModule } from '@ionic/angular';
 
