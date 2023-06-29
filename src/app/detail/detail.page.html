@@ -5,14 +5,21 @@
 </ion-header>
 
 <ion-content>
-  <div style="text-align: center;">
+  <div style="text-align: center">
     <div class="input-container">
       <label for="username">Username</label>
       <input type="text" name="username" id="username" required />
     </div>
     <div class="input-container">
       <label for="pw">Password</label>
-      <input type="password" name="pw" id="pw" required minlength="6" maxlength="20" />
+      <input
+        type="password"
+        name="pw"
+        id="pw"
+        required
+        minlength="6"
+        maxlength="20"
+      />
     </div>
     <div class="requirements-container">
       <span>(Password must be 6-20 characters long)</span>
@@ -20,7 +27,8 @@
   </div>
   <ion-content class="ion-padding">
     <div class="button-wrapper">
-      <ion-button [routerLink]="['/tabs/profile']">Register</ion-button>
+      <ion-button [routerLink]="['/info']">Register</ion-button>
       <ion-button routerLink="/homepage">Homepage</ion-button>
     </div>
   </ion-content>
+</ion-content>
