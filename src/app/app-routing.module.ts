@@ -16,7 +16,7 @@ import { InfoPageComponent } from './info/info.component';
  */
 
 const routes: Routes = [
-  { path: 'info', component: InfoComponent },
+  { path: 'info', component: InfoPageComponent },
   { path: 'login', component: LoginComponent },
   { path: 'home', component: HomepageComponent }, // line for the homepage
   { path: '', redirectTo: '/home', pathMatch: 'full' }, // Redirect empty path to the homepage

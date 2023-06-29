@@ -1,15 +1,14 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { InfoPageComponent } from './info.component';
 
 import { IonicModule } from '@ionic/angular';
 
+import { InfoPageComponent } from './info.component';
+
 @NgModule({
-  imports: [
-    IonicModule,
-    RouterModule.forChild([{ path: '', component: InfoPageComponent }]),
-  ],
   declarations: [InfoPageComponent],
+  imports: [CommonModule, IonicModule, RouterModule], // Add RouterModule here
   exports: [InfoPageComponent],
 })
 export class InfoPageModule {}
