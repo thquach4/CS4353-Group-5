@@ -8,7 +8,12 @@ import { InfoPageComponent } from './info.component';
 
 @NgModule({
   declarations: [InfoPageComponent],
-  imports: [CommonModule, IonicModule, RouterModule], // Add RouterModule here
+  imports: [
+    CommonModule,
+    IonicModule,
+    RouterModule,
+    RouterModule.forChild([{ path: '', component: InfoPageComponent }]),
+  ], // Add RouterModule here
   exports: [InfoPageComponent],
 })
 export class InfoPageModule {}
