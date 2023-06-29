@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Profile</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list [inset]="true">
+    <ion-item *ngFor="let term of profileArray">
+      <b class="term-key">{{ term[0] }}:</b>
+      <p>{{ term[1] }}</p>
+    </ion-item>
+  </ion-list>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="goToUpdate()">
+      <ion-icon name="sync-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>
