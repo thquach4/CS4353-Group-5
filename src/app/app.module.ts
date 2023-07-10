@@ -12,6 +12,8 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { LoginComponent } from './login/login.component';
 import { InfoPageComponent } from './info/info.component';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent, LoginComponent, InfoPageComponent],
@@ -21,6 +23,8 @@ import { InfoPageComponent } from './info/info.component';
     IonicModule.forRoot(),
     AppRoutingModule,
     HomepageModule, // Add this line
+    FormsModule,
+    HttpClientModule,
   ],
   providers: [
     StatusBar,
