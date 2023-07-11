@@ -81,3 +81,19 @@ def update_user_profile(uid):
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=1234, debug=True)
+
+    class PricingModule:
+    def __init__(self, base_price):
+        self.base_price = base_price
+    
+    def calculate_discounted_price(self, discount):
+        # TODO: Implement the calculation of discounted price
+        pass
+    
+    def calculate_tax(self, tax_rate):
+        # TODO: Implement the calculation of tax amount
+        pass
+    
+    def calculate_total_price(self, discount, tax_rate):
+        # TODO: Implement the calculation of total price
+        pass
