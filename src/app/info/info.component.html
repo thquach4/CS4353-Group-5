@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>My Profile</ion-title>
+    <ion-title>Profile Update</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,39 +9,39 @@
     <ion-list>
       <ion-item>
         <ion-label><b>Name: </b></ion-label>
-        <ion-input></ion-input>
+        <ion-input [(ngModel)]="name"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label><b>Address 1:</b></ion-label>
-        <ion-input></ion-input>
+        <ion-input [(ngModel)]="address1"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label><b>Address 2: </b></ion-label>
-        <ion-input></ion-input>
+        <ion-input [(ngModel)]="address2"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label><b>City: </b></ion-label>
-        <ion-input></ion-input>
+        <ion-input [(ngModel)]="city"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label><b>State: </b></ion-label>
-        <ion-input></ion-input>
+        <ion-input [(ngModel)]="state"></ion-input>
       </ion-item>
 
       <ion-item>
         <ion-label><b>Zipcode: </b></ion-label>
-        <ion-input type="number"></ion-input>
+        <ion-input type="number" [(ngModel)]="zipcode"></ion-input>
       </ion-item>
     </ion-list>
   </div>
 
   <ion-content class="ion-padding">
     <div class="button-wrapper">
-      <ion-button [routerLink]="['/tabs/profile']">Save</ion-button>
+      <ion-button (click)="onSave()">Save</ion-button>
     </div>
   </ion-content>
 </ion-content>
