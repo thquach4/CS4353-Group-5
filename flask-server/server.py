@@ -24,6 +24,23 @@ user_data = {
     },
 }
 
+class QuoteHistory:
+    def __init__(self):
+        self.quotes = []
+
+    def add_quote(self, gallons_requested, delivery_address, delivery_date, suggested_price, total_amount):
+        quote = {
+            'gallons_requested': gallons_requested,
+            'delivery_address': delivery_address,
+            'delivery_date': delivery_date,
+            'suggested_price': suggested_price,
+            'total_amount': total_amount
+        }
+        self.quotes.append(quote)
+
+    def get_quotes(self):
+        return self.quotes
+
 @app.route('/user/<uid>')
 def get_user_info(uid):
     if uid in user_data:
