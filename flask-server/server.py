@@ -50,7 +50,6 @@ def submit_quote():
     suggested_price = data.get('suggested_price', None)
     total_amount = data.get('total_amount', None)
 
-    # Perform any necessary data validation or processing here
 
     # Create an instance of QuoteHistory and add the quote
     quote_history = QuoteHistory()
