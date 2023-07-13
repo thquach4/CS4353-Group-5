@@ -131,3 +131,19 @@ if __name__ == '__main__':
     def calculate_total_price(self, discount, tax_rate):
         # TODO: Implement the calculation of total price
         pass
+
+pass
+ 
+class LoginModule:
+    @staticmethod
+    def login():
+        username = request.form['username']
+        password = request.form['password']
+        # Implement login logic here
+        # Validate credentials and return appropriate response
+        
+        # Example implementation: Check if username and password are valid
+        if username == 'admin' and password == 'password':
+            return {'message': 'Login successful'}
+        else:
+            return {'message': 'Invalid credentials'}    
