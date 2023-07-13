@@ -41,6 +41,23 @@ class QuoteHistory:
     def get_quotes(self):
         return self.quotes
 
+@app.route('/submit/quote', methods=['POST'])
+def submit_quote():
+    data = request.get_json()
+    gallons_requested = data.get('gallons_requested', None)
+    delivery_address = data.get('delivery_address', None)
+    delivery_date = data.get('delivery_date', None)
+    suggested_price = data.get('suggested_price', None)
+    total_amount = data.get('total_amount', None)
+
+
+    # Create an instance of QuoteHistory and add the quote
+    quote_history = QuoteHistory()
+    quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
+
+    # Return a response to the client
+    return jsonify({'state': 'success'})
+
 @app.route('/user/<uid>')
 def get_user_info(uid):
     if uid in user_data:
