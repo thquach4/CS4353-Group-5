@@ -41,6 +41,15 @@ class QuoteHistory:
     def get_quotes(self):
         return self.quotes
 
+class PricingModule:
+    def __init__(self, base_price):
+        self.base_price = base_price
+    
+    # TODO: Implement pricing calculations based on assignment requirements
+
+quote_history = QuoteHistory()
+pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
+
 @app.route('/submit/quote', methods=['POST'])
 def submit_quote():
     data = request.get_json()
@@ -50,6 +59,8 @@ def submit_quote():
     suggested_price = data.get('suggested_price', None)
     total_amount = data.get('total_amount', None)
 
+    # TODO: Use the pricing module to calculate the total amount
+    total_amount = pricing_module.calculate_total_amount()
 
     # Create an instance of QuoteHistory and add the quote
     quote_history = QuoteHistory()
@@ -113,37 +124,19 @@ def update_user_profile(uid):
         response = {'state': 'failed', 'message': errorMsg}
     return jsonify(response)
 
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    username = data.get('username', None)
+    password = data.get('password', None)
+
+    if username and password:
+        result = LoginModule.login(username, password)
+        return jsonify(result)
+    else:
+        return jsonify({'message': 'Invalid credentials'})
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=1234, debug=True)
-
-    class PricingModule:
-    def __init__(self, base_price):
-        self.base_price = base_price
-    
-    def calculate_discounted_price(self, discount):
-        # TODO: Implement the calculation of discounted price
-        pass
-    
-    def calculate_tax(self, tax_rate):
-        # TODO: Implement the calculation of tax amount
-        pass
-    
-    def calculate_total_price(self, discount, tax_rate):
-        # TODO: Implement the calculation of total price
-        pass
-
-pass
  
-class LoginModule:
-    @staticmethod
-    def login():
-        username = request.form['username']
-        password = request.form['password']
-        # Implement login logic here
-        # Validate credentials and return appropriate response
-        
-        # Example implementation: Check if username and password are valid
-        if username == 'admin' and password == 'password':
-            return {'message': 'Login successful'}
-        else:
-            return {'message': 'Invalid credentials'}    
+
