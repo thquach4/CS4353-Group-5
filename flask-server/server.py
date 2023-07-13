@@ -135,8 +135,6 @@ if __name__ == '__main__':
 pass
 
 # login_module.py
-from flask import request
-
 class LoginModule:
     @staticmethod
     def login():
