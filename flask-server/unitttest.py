@@ -67,27 +67,35 @@ class FlaskAppTests(unittest.TestCase):
         # Verify that user data has not been updated
         self.assertNotEqual(user_data['1000']['Name'], 'New Name')
         self.assertNotEqual(user_data['1000']['Address 1'], None)
-def test_login_successful(self):
-    data = {
-        'username': 'admin',
-        'password': 'password'
-    }
-    response = self.app.post('/login', json=data)
-    data = json.loads(response.data)
-    self.assertEqual(response.status_code, 200)
-    self.assertIn('message', data)
-    self.assertEqual(data['message'], 'Login successful')
 
-def test_login_invalid_credentials(self):
-    data = {
-        'username': 'invalid',
-        'password': 'invalid'
-    }
-    response = self.app.post('/login', json=data)
-    data = json.loads(response.data)
-    self.assertEqual(response.status_code, 200)
-    self.assertIn('message', data)
-    self.assertEqual(data['message'], 'Invalid credentials')
+
+class MockUser:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+class LoginTestCase(unittest.TestCase):
+    def setUp(self):
+        self.app = Flask(__name__)
+
+    def test_login_successful(self):
+        def mock_query(*args, **kwargs):
+            return MockUser(username='testuser', password='testpassword')
+        login_module.query_db = mock_query
+
+        with self.app.test_client() as client:
+            response = client.post('/login', json={'username': 'testuser', 'password': 'testpassword'})
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['message'], 'Login successful')
+
+    def test_login_invalid_credentials(self):
+        def mock_query(*args, **kwargs):
+            return None
+        login_module.query_db = mock_query
+        with self.app.test_client() as client:
+            response = client.post('/login', json={'username': 'invalid_username', 'password': 'invalid_password'})
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json['message'], 'Invalid credentials')
 
     def test_submit_quote(self):
         data = {
