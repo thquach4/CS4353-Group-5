@@ -41,6 +41,16 @@ class QuoteHistory:
     def get_quotes(self):
         return self.quotes
 
+quote_history = QuoteHistory()
+
+@app.route('/quote-history/<uid>')
+def get_quote_history(uid):
+    if uid in user_data:
+        return jsonify(quote_history.get_quotes())
+    else:
+        return jsonify({'error': 'User not found'})
+
+
 class PricingModule:
     def __init__(self, base_price):
         self.base_price = base_price
