@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
+from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 
 app = Flask(__name__)
+db = SQLAlchemy(app)
 CORS(app)
 
 # Sample user data
@@ -123,18 +125,25 @@ def update_user_profile(uid):
     else:
         response = {'state': 'failed', 'message': errorMsg}
     return jsonify(response)
+    
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+    password = db.Column(db.String(100))
 
 @app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    username = data.get('username', None)
-    password = data.get('password', None)
+    def login():
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
 
-    if username and password:
-        result = LoginModule.login(username, password)
-        return jsonify(result)
+    # Query the database for the user with the provided credentials
+    user = User.query.filter_by(username=username, password=password).first()
+
+    if user:
+        return jsonify({'message': 'Login successful'})
     else:
-        return jsonify({'message': 'Invalid credentials'})
+        return jsonify({'message': 'Invalid credentials'}), 401
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=1234, debug=True)
