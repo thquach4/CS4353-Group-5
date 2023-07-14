@@ -50,14 +50,12 @@ def get_quote_history(uid):
     else:
         return jsonify({'error': 'User not found'})
 
-
 class PricingModule:
     def __init__(self, base_price):
         self.base_price = base_price
     
     # TODO: Implement pricing calculations based on assignment requirements
 
-quote_history = QuoteHistory()
 pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
 
 @app.route('/submit/quote', methods=['POST'])
@@ -73,7 +71,6 @@ def submit_quote():
     total_amount = pricing_module.calculate_total_amount()
 
     # Create an instance of QuoteHistory and add the quote
-    quote_history = QuoteHistory()
     quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
 
     # Return a response to the client
@@ -95,7 +92,7 @@ def get_user_info(uid):
         )
     else:
         return jsonify({'error': 'User not found'})
-    
+
 @app.route('/update/profile/<uid>', methods=['POST'])
 def update_user_profile(uid):
     data = request.get_json()
@@ -116,9 +113,9 @@ def update_user_profile(uid):
     elif city is None or city == "":
         errorMsg = "City is required, please provide a valid address."
     elif state is None or len(state) != 2:
-        errorMsg = "State is invalid, please provide a two character state code."
+        errorMsg = "State is invalid, please provide a two-character state code."
     elif zipcode is None or len(str(zipcode)) != 5:
-        errorMsg = "Zipcode is invalid, please provide a five digit zip code."
+        errorMsg = "Zipcode is invalid, please provide a five-digit zip code."
 
     if errorMsg is None:
         response = {'state': 'pass'}
