@@ -66,6 +66,49 @@ class FlaskAppTests(unittest.TestCase):
         # Verify that user data has not been updated
         self.assertNotEqual(user_data['1000']['Name'], 'New Name')
         self.assertNotEqual(user_data['1000']['Address 1'], None)
+    def test_login_successful(self):
+        data = {
+            'username': 'admin',
+            'password': 'password'
+        }
+        response = self.app.post('/login', json=data)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['message'], 'Login successful')
 
+    def test_login_invalid_credentials(self):
+        data = {
+            'username': 'invalid',
+            'password': 'invalid'
+        }
+        response = self.app.post('/login', json=data)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['message'], 'Invalid credentials')
+
+    def test_submit_quote(self):
+        data = {
+            'gallons_requested': 100,
+            'delivery_address': '123 XYZ St',
+            'delivery_date': '2023-07-01',
+            'suggested_price': 3.5,
+            'total_amount': 350.0
+        }
+        response = self.app.post('/submit/quote', json=data)
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['state'], 'success')
+
+    # Placeholder test for the Pricing module
+    def test_pricing_module_placeholder(self):
+        # TODO: Implement proper test cases for the Pricing module
+        pricing_module = PricingModule(base_price=10.0)
+        # Add test cases for pricing calculations, discounts, tax, etc.
+        
 if __name__ == '__main__':
+    cov = coverage.Coverage()
+    cov.start()
     unittest.main()
+    cov.stop()
+    cov.save()
+    cov.report()
