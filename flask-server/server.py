@@ -7,6 +7,22 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
 db = SQLAlchemy(app)
 CORS(app)
 
+
+
+class ClientHistory(Base):
+    __tablename__ = 'ClientHistory'
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    delivery_address = Column(String(255), nullable=False)
+    gallons_requested = Column(Float, nullable=False)
+    delivery_date = Column(Date, nullable=False)
+    suggested_price = Column(Float, nullable=False)
+    total_amount = Column(Float, nullable=False)
+    state_id = Column(Integer, ForeignKey('states.id'), nullable=False)
+
+    # Many-to-one relationship with states
+    state = relationship('State', back_populates='client_history')
+
 # Sample user data
 user_data = {
     '1000': {
@@ -26,6 +42,9 @@ user_data = {
         'Zip Code': '12345',
     },
 }
+
+
+
 
 class QuoteHistory:
     def __init__(self):
