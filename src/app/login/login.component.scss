@@ -3,3 +3,13 @@
   flex-direction: column;
   gap: 10px; /* Add spacing between the buttons (optional) */
 }
+
+.input-field {
+  background-color: lightgrey;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.input-container label {
+  margin-right: 10px;
+}

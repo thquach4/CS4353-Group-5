@@ -2,13 +2,14 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AlertController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-info',
   templateUrl: './info.component.html',
 })
 export class InfoPageComponent {
-  constructor(private router: Router, private http: HttpClient, private alertController:AlertController) {}  
+  constructor(private router: Router, private http: HttpClient, private alertController:AlertController, private route: ActivatedRoute) {}  
   userId = "1000";
   name: string;
   address1: string;
@@ -18,6 +19,13 @@ export class InfoPageComponent {
   zipcode: number;
 
   ionViewWillEnter(): void {
+    // Retrieve the user ID from the query parameters
+    this.route.queryParams.subscribe(params => {
+      this.userId = params['uid'];
+      console.log('User ID:', this.userId);
+      // Use the user ID as needed in your page logic
+    });
+
     this.http.get("http://127.0.0.1:1234/user/" + this.userId)
       .subscribe(
         data => {
@@ -61,7 +69,7 @@ export class InfoPageComponent {
         // Handle the response from the Flask server
         console.log(response);
         if (response['state'] === 'pass') {
-          this.router.navigate(['/tabs/profile']);
+          this.router.navigate(['/tabs/profile'], { queryParams: { "uid": this.userId } });
         } else {
           this.warn(response['message']);
         }
@@ -82,7 +90,7 @@ export class InfoPageComponent {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            this.router.navigate(['/tabs/profile']);
+            this.router.navigate(['/tabs/profile'], { queryParams: { "uid": this.userId } });
           },
         },
         {

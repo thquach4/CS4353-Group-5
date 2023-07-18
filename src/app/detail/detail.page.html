@@ -8,7 +8,13 @@
   <div style="text-align: center">
     <div class="input-container">
       <label for="username">Username</label>
-      <input type="text" name="username" id="username" required />
+      <input 
+        type="text"
+        name="username"
+        id="username"
+        required
+        class="input-field"
+      />
     </div>
     <div class="input-container">
       <label for="pw">Password</label>
@@ -19,6 +25,7 @@
         required
         minlength="6"
         maxlength="20"
+        class="input-field"
       />
     </div>
     <div class="requirements-container">
@@ -27,7 +34,7 @@
   </div>
   <ion-content class="ion-padding">
     <div class="button-wrapper">
-      <ion-button [routerLink]="['/info']">Register</ion-button>
+      <ion-button (click)="onRegister()">Register</ion-button>
       <ion-button routerLink="/homepage">Homepage</ion-button>
     </div>
   </ion-content>

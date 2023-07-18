@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HistoryPageComponent } from './history.component';
+import { HistoryComponent } from './history.component';
 
 import { IonicModule } from '@ionic/angular';
 
 @NgModule({
   imports: [
     IonicModule,
-    RouterModule.forChild([{ path: '', component: HistoryPageComponent }]),
+    RouterModule.forChild([{ path: '', component: HistoryComponent }]),
   ],
-  declarations: [HistoryPageComponent],
-  exports: [HistoryPageComponent],
+  declarations: [HistoryComponent],
+  exports: [HistoryComponent],
 })
 export class HistoryPageModule {}
