@@ -76,6 +76,80 @@ def submit_quote():
     # Return a response to the client
     return jsonify({'state': 'success'})
 
+class Login(db.Model):
+    __tablename__ = 'login'
+    name = db.Column(db.String(255), primary_key=True)
+    pw = db.Column(db.String(255))
+    id = db.Column(db.Integer)
+
+class User(db.Model):
+    # Define table name (optional)
+    __tablename__ = 'users'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    address1 = db.Column(db.String(255))
+    address2 = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    state = db.Column(db.String(2))
+    zipcode = db.Column(db.String(5))
+
+
+@app.route('/register/user', methods=['POST'])
+def register_user():
+    data = request.get_json()
+    username = data.get('username', None)
+    password = data.get('password', None)
+    
+    errorMessage = None
+    if username is None or not re.match("^[A-Za-z]+$", username):
+        errorMessage = "Username should not be empty and should contains alphabetic letters only"
+    if password is None or len(password) < 6 or len(password) > 20 or not re.match("^[A-Za-z0-9]+$", password):
+        errorMessage = "Password should not be empty and should contains alphabetic letters or numbers"
+
+    login = Login.query.get(username)
+    if login:
+        errorMessage = "This username has already been registered, please try a new one."
+
+    if errorMessage is None:
+        # create a random uid that is not in the existing table
+        uid = random.randint(1, 10000)
+        while Login.query.filter_by(id=uid).first():
+            uid = random.randint(1, 10000)
+        login = Login(
+            name=username,
+            pw=password,
+            id=uid,
+        )
+        user = create_user(uid)
+        db.session.add(login)
+        db.session.add(user)
+        db.session.commit()
+        response = {'state': 'pass'}
+    else:
+        response = {'state': 'failed', 'message': errorMessage}
+    return jsonify(response)
+
+
+@app.route('/login/user', methods=['POST'])
+def login_user():
+    data = request.get_json()
+    username = data.get('username', None)
+    password = data.get('password', None)
+
+    errorMessage = None
+    login = Login.query.get(username)
+    if not login:
+        errorMessage = "This username does not exist. Please double check."
+    elif login.pw != password:
+        errorMessage = "The password is incorrect. Please double check."
+
+    if errorMessage is None:
+        response = {'state': 'pass', 'uid': login.id}
+    else:
+        response = {'state': 'failed', 'message': errorMessage}
+    return jsonify(response)
+
 @app.route('/user/<uid>')
 def get_user_info(uid):
     if uid in user_data:
@@ -131,17 +205,4 @@ def update_user_profile(uid):
         response = {'state': 'failed', 'message': errorMsg}
     return jsonify(response)
 
-@app.route('/login', methods=['POST'])
-def login():
-    data = request.get_json()
-    username = data.get('username', None)
-    password = data.get('password', None)
 
-    if username and password:
-        result = LoginModule.login(username, password)
-        return jsonify(result)
-    else:
-        return jsonify({'message': 'Invalid credentials'})
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=1234, debug=True)
