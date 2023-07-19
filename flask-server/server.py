@@ -46,12 +46,22 @@ class QuoteHistory:
 
 quote_history = QuoteHistory()
 
-@app.route('/quote-history/<uid>')
-def get_quote_history(uid):
-    if uid in user_data:
-        return jsonify(quote_history.get_quotes())
+@app.route('/history/<uid>')
+def get_quote_info(uid):
+if uid in quote_data:
+        data = quote_data[uid]
+        return jsonify(
+            [
+                
+                ('gallons_requested', data['gallons_requested']),
+                ('delivery_address ', data['delivery_address']),
+                ('delivery_date', data['delivery_date']),
+                ('suggested_price', data['suggested_price']),
+                ('total_amount', data['total_amount']),
+            ]
+        )
     else:
-        return jsonify({'error': 'User not found'})
+        return jsonify(response)
 
 class PricingModule:
     def __init__(self, base_price):
