@@ -106,6 +106,20 @@ class User(db.Model):
 
     state = db.relationship('State', backref=db.backref('users'))
 
+class QuoteHistory(db.Model):
+    __tablename__ = 'QuoteHistory'
+
+    id = db.Column(db.Integer, primary_key=True)
+    delivery_address = db.Column(db.String(255), nullable=False)
+    gallons_requested = db.Column(db.Float, nullable=False)
+    delivery_date = db.Column(db.Date, nullable=False)
+    suggested_price = db.Column(db.Float, nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
+    state_id = db.Column(db.Integer, ForeignKey('states.id'), nullable=False)
+
+    # Many-to-one relationship with states
+    state = db.relationship('State', backref=db.backref('users'))
+
 @app.route('/register/user', methods=['POST'])
 def register_user():
     data = request.get_json()
