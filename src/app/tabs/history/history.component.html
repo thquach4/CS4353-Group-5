@@ -4,5 +4,25 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div class="example-content">Here is the history page</div>
+  <ion-grid>
+    <!-- Header Row -->
+    <ion-row>
+      <ion-col>Delivery Address</ion-col>
+      <ion-col>Gallons Requested</ion-col>
+      <ion-col>Delivery Date</ion-col>
+      <ion-col>Suggested Price</ion-col>
+      <ion-col>Total Amount</ion-col>
+      <ion-col>State ID</ion-col>
+    </ion-row>
+    <ion-row *ngFor="let quote of historyData">
+      <ion-col>{{ quote.delivery_address }}</ion-col>
+      <ion-col>{{ quote.gallons_requested }}</ion-col>
+      <ion-col>{{ quote.delivery_date }}</ion-col>
+      <ion-col>{{ quote.suggested_price }}</ion-col>
+      <ion-col>{{ quote.total_amount }}</ion-col>
+      <ion-col>{{ quote.state_id }}</ion-col>
+    </ion-row>
+
+
+  </ion-grid>
 </ion-content>
