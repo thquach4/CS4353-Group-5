@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { NavController } from '@ionic/angular';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-history',
+  selector: 'tabs-history-page',
   templateUrl: './history.component.html',
 })
 export class HistoryComponent implements OnInit {
