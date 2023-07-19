@@ -1,7 +1,10 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
+from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
+db = SQLAlchemy(app)
 CORS(app)
 
 # Sample user data
@@ -82,6 +85,13 @@ class Login(db.Model):
     pw = db.Column(db.String(255))
     id = db.Column(db.Integer)
 
+class State(db.Model):
+    __tablename__ = 'states'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    abbreviation = db.Column(db.String(2), nullable=False)
+    
 class User(db.Model):
     # Define table name (optional)
     __tablename__ = 'users'
@@ -91,9 +101,24 @@ class User(db.Model):
     address1 = db.Column(db.String(255))
     address2 = db.Column(db.String(255))
     city = db.Column(db.String(255))
-    state = db.Column(db.String(2))
+    state_id = db.Column(db.Integer, db.ForeignKey('states.id'))
     zipcode = db.Column(db.String(5))
 
+    state = db.relationship('State', backref=db.backref('users'))
+
+class QuoteHistory(db.Model):
+    __tablename__ = 'QuoteHistory'
+
+    id = db.Column(db.Integer, primary_key=True)
+    delivery_address = db.Column(db.String(255), nullable=False)
+    gallons_requested = db.Column(db.Float, nullable=False)
+    delivery_date = db.Column(db.Date, nullable=False)
+    suggested_price = db.Column(db.Float, nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
+    state_id = db.Column(db.Integer, ForeignKey('states.id'), nullable=False)
+
+    # Many-to-one relationship with states
+    state = db.relationship('State', backref=db.backref('users'))
 
 @app.route('/register/user', methods=['POST'])
 def register_user():
