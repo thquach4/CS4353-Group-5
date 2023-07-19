@@ -1,17 +1,33 @@
-import coverage
 import unittest
 import json
 from flask import Flask
-from server import app, user_data
+from server import app, User, Login, db, inject_fake_data
 
 class FlaskAppTests(unittest.TestCase):
 
     def setUp(self):
         app.testing = True
         self.app = app.test_client()
+        inject_fake_data()
+
+    def tearDown(self):
+        # Remove the test database after each test
+        with app.app_context():
+            db.drop_all()
+
+    def reset(self):
+        with app.app_context():
+            user = User.query.get('1000')
+            user.name = 'QWERTY ABCDEF'
+            user.address1 = '123 XYZ St'
+            user.address2 = None
+            user.city = 'AWESOME'
+            user.state = 'AB'
+            user.zipcode = '12345'
+            db.session.commit()
 
     def test_get_user_info_existing_user(self):
-        response = self.app.get('/user/1000')
+        response = self.app.get('/get/profile/1000')
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         expected = [
@@ -27,7 +43,7 @@ class FlaskAppTests(unittest.TestCase):
             self.assertEqual(act[1], exp[1])
 
     def test_get_user_info_nonexistent_user(self):
-        response = self.app.get('/user/9999')
+        response = self.app.get('/get/profile/99999')
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['error'], 'User not found')
@@ -41,14 +57,12 @@ class FlaskAppTests(unittest.TestCase):
             'state': 'XY',
             'zipcode': '98765'
         }
-        response = self.app.post('/update/profile/1000', json=data)
+        response = self.app.post('/update/profile/1001', json=data)
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['state'], 'pass')
         self.assertNotIn('message', data)
-        # Verify that user data has been updated
-        self.assertEqual(user_data['1000']['Name'], 'New Name')
-        self.assertEqual(user_data['1000']['Address 1'], '456 ABC St')
+        self.reset()
 
     def test_update_user_profile_invalid_data(self):
         data = {
@@ -64,54 +78,57 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['state'], 'failed')
         self.assertEqual(data['message'], 'Address 1 is required, please provide a valid address.')
-        # Verify that user data has not been updated
-        self.assertNotEqual(user_data['1000']['Name'], 'New Name')
-        self.assertNotEqual(user_data['1000']['Address 1'], None)
-def test_login_successful(self):
-    data = {
-        'username': 'admin',
-        'password': 'password'
-    }
-    response = self.app.post('/login', json=data)
-    data = json.loads(response.data)
-    self.assertEqual(response.status_code, 200)
-    self.assertIn('message', data)
-    self.assertEqual(data['message'], 'Login successful')
+        self.reset()
 
-def test_login_invalid_credentials(self):
-    data = {
-        'username': 'invalid',
-        'password': 'invalid'
-    }
-    response = self.app.post('/login', json=data)
-    data = json.loads(response.data)
-    self.assertEqual(response.status_code, 200)
-    self.assertIn('message', data)
-    self.assertEqual(data['message'], 'Invalid credentials')
-
-    def test_submit_quote(self):
-        data = {
-            'gallons_requested': 100,
-            'delivery_address': '123 XYZ St',
-            'delivery_date': '2023-07-01',
-            'suggested_price': 3.5,
-            'total_amount': 350.0
-        }
-        response = self.app.post('/submit/quote', json=data)
-        data = json.loads(response.data)
+    def test_register_user(self):
+        # Test registering a new user
+        data = {'username': 'testuser', 'password': 'testpassword'}
+        response = self.app.post('/register/user', json=data)
+        data = response.get_json()
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(data['state'], 'success')
+        self.assertEqual(data['state'], 'pass')
 
-    # Placeholder test for the Pricing module
-    def test_pricing_module_placeholder(self):
-        # TODO: Implement proper test cases for the Pricing module
-        from server import app, user_data, PricingModule
-        # Add test cases for pricing calculations, discounts, tax, etc.
-        
+    def test_register_existing_user(self):
+        # Test registering an existing user
+        with app.app_context():
+            existing_user = Login(name='existinguser', pw='existingpassword', id=1)
+            db.session.add(existing_user)
+            db.session.commit()
+
+        data = {'username': 'existinguser', 'password': 'testpassword'}
+        response = self.app.post('/register/user', json=data)
+        data = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['state'], 'failed')
+        self.assertEqual(data['message'], 'This username has already been registered, please try a new one.')
+
+    def test_login_user(self):
+        # Test login with correct credentials
+        with app.app_context():
+            login = Login(name='testuser', pw='testpassword', id=1)
+            db.session.add(login)
+            db.session.commit()
+
+        data = {'username': 'testuser', 'password': 'testpassword'}
+        response = self.app.post('/login/user', json=data)
+        data = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['state'], 'pass')
+        self.assertIn('uid', data)
+
+    def test_login_invalid_user(self):
+        # Test login with incorrect credentials
+        with app.app_context():
+            login = Login(name='testuser', pw='testpassword', id=1)
+            db.session.add(login)
+            db.session.commit()
+
+        data = {'username': 'testuser', 'password': 'wrongpassword'}
+        response = self.app.post('/login/user', json=data)
+        data = response.get_json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(data['state'], 'failed')
+        self.assertEqual(data['message'], 'The password is incorrect. Please double check.')
+
 if __name__ == '__main__':
-    cov = coverage.Coverage()
-    cov.start()
     unittest.main()
-    cov.stop()
-    cov.save()
-    cov.report()

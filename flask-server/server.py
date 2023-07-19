@@ -1,93 +1,15 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+import re
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
 db = SQLAlchemy(app)
 CORS(app)
 
-# Sample user data
-user_data = {
-    '1000': {
-        'Name': 'QWERTY ABCDEF',
-        'Address 1': '123 XYZ St',
-        'Address 2': None,
-        'City': 'AWESOME',
-        'State': 'AB',
-        'Zip Code': '12345',
-    },
-    '1001': {
-        'Name': 'HELLO WORLD',
-        'Address 1': '123 XYZ St',
-        'Address 2': None,
-        'City': 'AWESOME',
-        'State': 'AB',
-        'Zip Code': '12345',
-    },
-}
-
-class QuoteHistory:
-    def __init__(self):
-        self.quotes = []
-
-    def add_quote(self, gallons_requested, delivery_address, delivery_date, suggested_price, total_amount):
-        quote = {
-            'gallons_requested': gallons_requested,
-            'delivery_address': delivery_address,
-            'delivery_date': delivery_date,
-            'suggested_price': suggested_price,
-            'total_amount': total_amount
-        }
-        self.quotes.append(quote)
-
-    def get_quotes(self):
-        return self.quotes
-
-quote_history = QuoteHistory()
-
-@app.route('/history/<uid>')
-def get_quote_info(uid):
-if uid in quote_data:
-        data = quote_data[uid]
-        return jsonify(
-            [
-                
-                ('gallons_requested', data['gallons_requested']),
-                ('delivery_address ', data['delivery_address']),
-                ('delivery_date', data['delivery_date']),
-                ('suggested_price', data['suggested_price']),
-                ('total_amount', data['total_amount']),
-            ]
-        )
-    else:
-        return jsonify(response)
-
-class PricingModule:
-    def __init__(self, base_price):
-        self.base_price = base_price
-    
-    # TODO: Implement pricing calculations based on assignment requirements
-
-pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
-
-@app.route('/submit/quote', methods=['POST'])
-def submit_quote():
-    data = request.get_json()
-    gallons_requested = data.get('gallons_requested', None)
-    delivery_address = data.get('delivery_address', None)
-    delivery_date = data.get('delivery_date', None)
-    suggested_price = data.get('suggested_price', None)
-    total_amount = data.get('total_amount', None)
-
-    # TODO: Use the pricing module to calculate the total amount
-    total_amount = pricing_module.calculate_total_amount()
-
-    # Create an instance of QuoteHistory and add the quote
-    quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
-
-    # Return a response to the client
-    return jsonify({'state': 'success'})
+# ================ login and profile related codes ================
 
 class Login(db.Model):
     __tablename__ = 'login'
@@ -95,13 +17,6 @@ class Login(db.Model):
     pw = db.Column(db.String(255))
     id = db.Column(db.Integer)
 
-class State(db.Model):
-    __tablename__ = 'states'
-
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    abbreviation = db.Column(db.String(2), nullable=False)
-    
 class User(db.Model):
     # Define table name (optional)
     __tablename__ = 'users'
@@ -111,24 +26,9 @@ class User(db.Model):
     address1 = db.Column(db.String(255))
     address2 = db.Column(db.String(255))
     city = db.Column(db.String(255))
-    state_id = db.Column(db.Integer, db.ForeignKey('states.id'))
+    state = db.Column(db.String(2))
     zipcode = db.Column(db.String(5))
 
-    state = db.relationship('State', backref=db.backref('users'))
-
-class QuoteHistory(db.Model):
-    __tablename__ = 'QuoteHistory'
-
-    id = db.Column(db.Integer, primary_key=True)
-    delivery_address = db.Column(db.String(255), nullable=False)
-    gallons_requested = db.Column(db.Float, nullable=False)
-    delivery_date = db.Column(db.Date, nullable=False)
-    suggested_price = db.Column(db.Float, nullable=False)
-    total_amount = db.Column(db.Float, nullable=False)
-    state_id = db.Column(db.Integer, ForeignKey('states.id'), nullable=False)
-
-    # Many-to-one relationship with states
-    state = db.relationship('State', backref=db.backref('users'))
 
 @app.route('/register/user', methods=['POST'])
 def register_user():
@@ -185,23 +85,23 @@ def login_user():
         response = {'state': 'failed', 'message': errorMessage}
     return jsonify(response)
 
-@app.route('/user/<uid>')
+@app.route('/get/profile/<uid>')
 def get_user_info(uid):
-    if uid in user_data:
-        data = user_data[uid]
+    user = User.query.get(uid)
+    if user:
         return jsonify(
             [
-                ('Name', data['Name']),
-                ('Address 1', data['Address 1']),
-                ('Address 2', data['Address 2']),
-                ('City', data['City']),
-                ('State', data['State']),
-                ('Zip Code', data['Zip Code']),
+                ('Name', user.name),
+                ('Address 1', user.address1),
+                ('Address 2', user.address2),
+                ('City', user.city),
+                ('State', user.state),
+                ('Zip Code', user.zipcode),
             ]
         )
     else:
         return jsonify({'error': 'User not found'})
-
+    
 @app.route('/update/profile/<uid>', methods=['POST'])
 def update_user_profile(uid):
     data = request.get_json()
@@ -222,22 +122,137 @@ def update_user_profile(uid):
     elif city is None or city == "":
         errorMsg = "City is required, please provide a valid address."
     elif state is None or len(state) != 2:
-        errorMsg = "State is invalid, please provide a two-character state code."
+        errorMsg = "State is invalid, please provide a two character state code."
     elif zipcode is None or len(str(zipcode)) != 5:
-        errorMsg = "Zipcode is invalid, please provide a five-digit zip code."
+        errorMsg = "Zipcode is invalid, please provide a five digit zip code."
 
     if errorMsg is None:
+        user = User.query.get(uid)
+        user.name = name
+        user.address1 = address1
+        user.address2 = address2
+        user.city = city
+        user.state = state
+        user.zipcode = zipcode
+        db.session.commit()
         response = {'state': 'pass'}
-        user_data[uid] = {
-            'Name': name,
-            'Address 1': address1,
-            'Address 2': address2,
-            'City': city,
-            'State': state,
-            'Zip Code': zipcode,
-        }
     else:
         response = {'state': 'failed', 'message': errorMsg}
     return jsonify(response)
+    
+# ================ END OF login and profile related codes ================
 
+class QuoteHistory:
+    def __init__(self):
+        self.quotes = []
 
+    def add_quote(self, gallons_requested, delivery_address, delivery_date, suggested_price, total_amount):
+        quote = {
+            'gallons_requested': gallons_requested,
+            'delivery_address': delivery_address,
+            'delivery_date': delivery_date,
+            'suggested_price': suggested_price,
+            'total_amount': total_amount
+        }
+        self.quotes.append(quote)
+
+    def get_quotes(self):
+        return self.quotes
+
+quote_history = QuoteHistory()
+
+@app.route('/quote-history/<uid>')
+def get_quote_history(uid):
+    if uid in user_data:
+        return jsonify(quote_history.get_quotes())
+    else:
+        return jsonify({'error': 'User not found'})
+
+class PricingModule:
+    def __init__(self, base_price):
+        self.base_price = base_price
+    
+    # TODO: Implement pricing calculations based on assignment requirements
+
+pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
+
+@app.route('/submit/quote', methods=['POST'])
+def submit_quote():
+    data = request.get_json()
+    gallons_requested = data.get('gallons_requested', None)
+    delivery_address = data.get('delivery_address', None)
+    delivery_date = data.get('delivery_date', None)
+    suggested_price = data.get('suggested_price', None)
+    total_amount = data.get('total_amount', None)
+
+    # TODO: Use the pricing module to calculate the total amount
+    total_amount = pricing_module.calculate_total_amount()
+
+    # Create an instance of QuoteHistory and add the quote
+    quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
+
+    # Return a response to the client
+    return jsonify({'state': 'success'})
+
+ 
+def inject_fake_data():
+    # Sample user data
+    user_data = {
+        '1000': {
+            'Name': 'QWERTY ABCDEF',
+            'Address 1': '123 XYZ St',
+            'Address 2': None,
+            'City': 'AWESOME',
+            'State': 'AB',
+            'Zip Code': '12345',
+        },
+        '1001': {
+            'Name': 'HELLO WORLD',
+            'Address 1': '123 XYZ St',
+            'Address 2': None,
+            'City': 'AWESOME',
+            'State': 'AB',
+            'Zip Code': '12345',
+        },
+    }
+
+    # Inject fake data into the database
+    with app.app_context():
+        db.create_all()
+        for id in user_data:
+            if User.query.get(id):
+                continue
+            user = create_user(
+                id,
+                user_data[id]["Name"],
+                user_data[id]["Address 1"],
+                user_data[id]["Address 2"],
+                user_data[id]["City"],
+                user_data[id]["State"],
+                user_data[id]["Zip Code"],
+            )
+            db.session.add(user)
+        db.session.commit()
+
+def create_user(
+        uId,
+        uName=None,
+        uAddress1=None, 
+        uAddress2=None, 
+        uCity=None, 
+        uState=None, 
+        uZipCode=None,
+    ):
+    return User(
+        id=uId,
+        name=uName,
+        address1=uAddress1,
+        address2=uAddress2,
+        city=uCity,
+        state=uState,
+        zipcode=uZipCode
+    )
+
+if __name__ == '__main__':
+    inject_fake_data()
+    app.run(host='127.0.0.1', port=1234, debug=True)
