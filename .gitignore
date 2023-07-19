@@ -3,4 +3,4 @@ node_modules
 homebrew
 */instance
 *.coverage
-*/__pycache__/*
+*.pyc
