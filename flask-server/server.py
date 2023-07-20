@@ -8,7 +8,14 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
 db = SQLAlchemy(app)
 CORS(app)
+# ==================== states table code ==========================
+class State(db.Model):
+    __tablename__ = 'states'
 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+    abbreviation = db.Column(db.String(2), nullable=False)
+# ================== end states table code ========================
 # ================ login and profile related codes ================
 
 class Login(db.Model):
@@ -26,9 +33,10 @@ class User(db.Model):
     address1 = db.Column(db.String(255))
     address2 = db.Column(db.String(255))
     city = db.Column(db.String(255))
-    state = db.Column(db.String(2))
+    state_id = db.Column(db.Integer, db.ForeignKey('states.id')) # foreignkey inserted for state table to be connected to User
     zipcode = db.Column(db.String(5))
 
+    state = db.relationship('State', backref=db.backref('users')) # create relationship to user table
 
 @app.route('/register/user', methods=['POST'])
 def register_user():
