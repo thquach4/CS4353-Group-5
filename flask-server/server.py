@@ -142,31 +142,58 @@ def update_user_profile(uid):
     
 # ================ END OF login and profile related codes ================
 
-class QuoteHistory:
-    def __init__(self):
-        self.quotes = []
+class History(db.Model):
+    __tablename__ = 'History'
 
-    def add_quote(self, gallons_requested, delivery_address, delivery_date, suggested_price, total_amount):
-        quote = {
-            'gallons_requested': gallons_requested,
-            'delivery_address': delivery_address,
-            'delivery_date': delivery_date,
-            'suggested_price': suggested_price,
-            'total_amount': total_amount
-        }
-        self.quotes.append(quote)
+    id = db.Column(db.Integer, primary_key=True)
+    delivery_address = db.Column(db.String(255), nullable=False)
+    gallons_requested = db.Column(db.Float, nullable=False)
+    delivery_date = db.Column(db.Date, nullable=False)
+    suggested_price = db.Column(db.Float, nullable=False)
+    total_amount = db.Column(db.Float, nullable=False)
+    
+@app.route('/register/user/quote', methods=['POST'])
+def quote():
+    data = request.get_json()
+    delivery_address = data.get('delivery address', None)
+    gallons_requested = data.get('gallons requested', None)
+    delivery_date = data.get('delivery date', None)
+    suggested_price = data.get('suggested price', None)
+    total_amount = data.get('total amount', None)
 
-    def get_quotes(self):
-        return self.quotes
+    # Check if any of the attributes are None
+    if delivery_address is None or gallons_requested is None or delivery_date is None or suggested_price is None or total_amount is None:
+        return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
+    
+    new_quote = History(
+        delivery_address=delivery_address,
+        gallons_requested=gallons_requested,
+        delivery_date=delivery_date,
+        suggested_price=suggested_price,
+        total_amount=total_amount
+    )
+    db.session.add(new_quote)
+    db.session.commit()
 
-quote_history = QuoteHistory()
+    
+    # Return a success message if everything is processed successfully
+    return jsonify({'message': 'User\'s quote has been registered successfully.'}), 200
 
-@app.route('/quote-history/<uid>')
-def get_quote_history(uid):
-    if uid in user_data:
-        return jsonify(quote_history.get_quotes())
+@app.route('/get/history/<quote_id>')
+def quote_history(quote_id):
+    history = History.query.get(quote_id)
+    if history:
+        return jsonify(
+            [
+                ('delivery address', history.delivery_address),
+                ('gallons requested', history.gallons_requested),
+                ('delivery date', history.delivery_date),
+                ('suggested price', history.suggested_price),
+                ('total amount', history.total_amount),
+            ]
+        )
     else:
-        return jsonify({'error': 'User not found'})
+        return jsonify({'error': 'History not found'})
 
 class PricingModule:
     def __init__(self, base_price):
@@ -175,15 +202,6 @@ class PricingModule:
     # TODO: Implement pricing calculations based on assignment requirements
 
 pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
-
-@app.route('/submit/quote', methods=['POST'])
-def submit_quote():
-    data = request.get_json()
-    gallons_requested = data.get('gallons_requested', None)
-    delivery_address = data.get('delivery_address', None)
-    delivery_date = data.get('delivery_date', None)
-    suggested_price = data.get('suggested_price', None)
-    total_amount = data.get('total_amount', None)
 
     # TODO: Use the pricing module to calculate the total amount
     total_amount = pricing_module.calculate_total_amount()
