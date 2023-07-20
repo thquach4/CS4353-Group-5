@@ -164,14 +164,19 @@ def quote():
     # Check if any of the attributes are None
     if delivery_address is None or gallons_requested is None or delivery_date is None or suggested_price is None or total_amount is None:
         return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
-    
+
+    quote_uid = random.randint(1, 10000)
+        while History.query.filter_by(id=quote_uid).first():
+        quote_uid = random.randint(1, 10000)
+        
     new_quote = History(
         delivery_address=delivery_address,
         gallons_requested=gallons_requested,
         delivery_date=delivery_date,
         suggested_price=suggested_price,
-        total_amount=total_amount
-    )
+        total_amount=total_amount,
+        id = quote_uid
+        )
     db.session.add(new_quote)
     db.session.commit()
 
