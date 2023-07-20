@@ -33,10 +33,11 @@ class User(db.Model):
     address1 = db.Column(db.String(255))
     address2 = db.Column(db.String(255))
     city = db.Column(db.String(255))
-    state_id = db.Column(db.Integer, db.ForeignKey('states.id')) # foreignkey inserted for state table to be connected to User
+    state = db.Column(db.String(255))
+    # state_id = db.Column(db.Integer, db.ForeignKey('states.id')) # foreignkey inserted for state table to be connected to User
     zipcode = db.Column(db.String(5))
 
-    state = db.relationship('State', backref=db.backref('users')) # create relationship to user table
+    # state = db.relationship('State', backref=db.backref('users')) # create relationship to user table
 
 @app.route('/register/user', methods=['POST'])
 def register_user():
@@ -174,7 +175,7 @@ def quote():
         return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
 
     quote_uid = random.randint(1, 10000)
-        while History.query.filter_by(id=quote_uid).first():
+    while History.query.filter_by(id=quote_uid).first():
         quote_uid = random.randint(1, 10000)
         
     new_quote = History(
@@ -192,7 +193,7 @@ def quote():
     # Return a success message if everything is processed successfully
     return jsonify({'message': 'User\'s quote has been registered successfully.'}), 200
 
-@app.route('/get/history/<quote_id>')
+@app.route('/quote-history/<quote_id>')
 def quote_history(quote_id):
     history = History.query.get(quote_id)
     if history:
@@ -208,22 +209,22 @@ def quote_history(quote_id):
     else:
         return jsonify({'error': 'History not found'})
 
-class PricingModule:
-    def __init__(self, base_price):
-        self.base_price = base_price
+# class PricingModule:
+#     def __init__(self, base_price):
+#         self.base_price = base_price
     
-    # TODO: Implement pricing calculations based on assignment requirements
+#     # TODO: Implement pricing calculations based on assignment requirements
 
-pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
+#     pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
 
-    # TODO: Use the pricing module to calculate the total amount
-    total_amount = pricing_module.calculate_total_amount()
+#     # TODO: Use the pricing module to calculate the total amount
+#     total_amount = pricing_module.calculate_total_amount()
 
-    # Create an instance of QuoteHistory and add the quote
-    quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
+#     # Create an instance of QuoteHistory and add the quote
+#     quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
 
-    # Return a response to the client
-    return jsonify({'state': 'success'})
+#     # Return a response to the client
+#     return jsonify({'state': 'success'})
 
  
 def inject_fake_data():
@@ -287,3 +288,24 @@ def create_user(
 if __name__ == '__main__':
     inject_fake_data()
     app.run(host='127.0.0.1', port=1234, debug=True)
+
+
+# Frontend issues:
+#   1. Quote submission is not linkeed to any button, so there is no way to submit the quote ot BE
+#   2. Histroy page is having some issues compiling the results from BE
+        # core.js:4197 ERROR Error: Cannot find a differ supporting object '[object Object]' of type 'object'. NgFor only supports binding to Iterables such as Arrays.
+        #     at NgForOf.ngDoCheck (common.js:3191:1)
+        #     at callHook (core.js:3042:1)
+        #     at callHooks (core.js:3008:1)
+        #     at executeCheckHooks (core.js:2941:1)
+        #     at refreshView (core.js:7181:1)
+        #     at refreshComponent (core.js:8326:1)
+        #     at refreshChildComponents (core.js:6965:1)
+        #     at refreshView (core.js:7222:1)
+        #     at refreshEmbeddedViews (core.js:8280:1)
+        #     at refreshView (core.js:7196:1)
+#   3. Histroy page has a hardcoded user id, which is incorrect
+
+# backend issues
+#   1. We shouldn't introduce the foreign relationship because it breaks the compilation (you should be able to compile the codes on Windows)
+#   2. Histroy DB is not reciving data from user because we don't have submission from FE
