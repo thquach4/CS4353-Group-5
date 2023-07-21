@@ -129,6 +129,56 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['state'], 'failed')
         self.assertEqual(data['message'], 'The password is incorrect. Please double check.')
+    
+    def test_register_user_quote(self):
+    data = {
+        'delivery_address': '123 Test St',
+        'gallons_requested': 100,
+        'delivery_date': '2023-07-21',
+        'suggested_price': 3.5,
+        'total_amount': 350,
+    }
+    response = self.app.post('/register/user/quote', json=data)
+    data = response.get_json()
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(data['message'], 'User\'s quote has been registered successfully.')
+
+    def test_get_quote_history_existing_quote(self):
+    # Register a new quote to get its ID
+    data = {
+        'delivery_address': '123 Test St',
+        'gallons_requested': 100,
+        'delivery_date': '2023-07-21',
+        'suggested_price': 3.5,
+        'total_amount': 350,
+    }
+    response = self.app.post('/register/user/quote', json=data)
+    data = response.get_json()
+    quote_id = data['id']
+
+    # Test retrieving the quote history using the quote_id
+    response = self.app.get(f'/get/history/{quote_id}')
+    data = response.get_json()
+    self.assertEqual(response.status_code, 200)
+    self.assertIn('history', data)
+    self.assertEqual(len(data['history']), 1)
+
+    # Ensure the retrieved data matches the original data
+    quote_data = data['history'][0]
+    self.assertEqual(quote_data['delivery_address'], '123 Test St')
+    self.assertEqual(quote_data['gallons_requested'], 100)
+    self.assertEqual(quote_data['delivery_date'], '2023-07-21')
+    self.assertEqual(quote_data['suggested_price'], 3.5)
+    self.assertEqual(quote_data['total_amount'], 350)
+
+    def test_get_quote_history_nonexistent_quote(self):
+    # Test retrieving a quote that does not exist
+    response = self.app.get('/get/history/99999')
+    data = response.get_json()
+    self.assertEqual(response.status_code, 200)
+    self.assertIn('error', data)
+    self.assertEqual(data['error'], 'History not found')
+
 
 if __name__ == '__main__':
     unittest.main()
