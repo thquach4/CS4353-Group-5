@@ -155,11 +155,11 @@ class History(db.Model):
 @app.route('/register/user/quote', methods=['POST'])
 def quote():
     data = request.get_json()
-    delivery_address = data.get('delivery address', None)
-    gallons_requested = data.get('gallons requested', None)
-    delivery_date = data.get('delivery date', None)
-    suggested_price = data.get('suggested price', None)
-    total_amount = data.get('total amount', None)
+    delivery_address = data.get('delivery_address', None)
+    gallons_requested = data.get('gallons_requested', None)
+    delivery_date = data.get('delivery_date', None)
+    suggested_price = data.get('suggested_price', None)
+    total_amount = data.get('total_amount', None)
 
     # Check if any of the attributes are None
     if delivery_address is None or gallons_requested is None or delivery_date is None or suggested_price is None or total_amount is None:
@@ -190,11 +190,11 @@ def quote_history(quote_id):
     if history:
         return jsonify(
             [
-                ('delivery address', history.delivery_address),
-                ('gallons requested', history.gallons_requested),
-                ('delivery date', history.delivery_date),
-                ('suggested price', history.suggested_price),
-                ('total amount', history.total_amount),
+                ('delivery_address', history.delivery_address),
+                ('gallons_requested', history.gallons_requested),
+                ('delivery_date', history.delivery_date),
+                ('suggested_price', history.suggested_price),
+                ('total_amount', history.total_amount),
             ]
         )
     else:
