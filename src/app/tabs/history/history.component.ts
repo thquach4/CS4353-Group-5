@@ -9,23 +9,29 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class HistoryComponent implements OnInit {
   historyData: any[];
+  userId: string;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.getHistoryData();
+    // Fetch the user ID from route parameters
+    this.route.paramMap.subscribe(params => {
+      this.userId = params.get('userId');
+      this.getHistoryData();
+    });
   }
 
+
   getHistoryData() {
-    // Replace the URL with the new endpoint for fetching quote history
-    const userId = "1000"; // Replace with the actual user ID
-    this.http.get('http://127.0.0.1:1234/quote-history/' + userId)
+    
+    
+    this.http.get('http://127.0.0.1:1234/quote-history/' + this.userId)
       .subscribe(
-        (data: any[]) => {
+        (data: any) => {
           console.log('Received history data.');
           console.log(data);
           // Store the history data or perform any required operations
-          this.historyData = data;
+          this.historyData = data.history;
         },
         (error: any) => {
           console.log('Error fetching history data.');
