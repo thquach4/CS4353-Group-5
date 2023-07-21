@@ -188,15 +188,17 @@ def quote():
 def quote_history(quote_id):
     history = History.query.get(quote_id)
     if history:
-        return jsonify(
-            [
-                ('delivery_address', history.delivery_address),
-                ('gallons_requested', history.gallons_requested),
-                ('delivery_date', history.delivery_date),
-                ('suggested_price', history.suggested_price),
-                ('total_amount', history.total_amount),
+        return jsonify({
+            'history': [
+                {
+                    'delivery_address': history.delivery_address,
+                    'gallons_requested': history.gallons_requested,
+                    'delivery_date': history.delivery_date,
+                    'suggested_price': history.suggested_price,
+                    'total_amount': history.total_amount,
+                }
             ]
-        )
+        })
     else:
         return jsonify({'error': 'History not found'})
 
