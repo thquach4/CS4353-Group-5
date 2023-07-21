@@ -23,7 +23,7 @@ const routes: Routes = [
           import('./profile/profile.module').then((m) => m.ProfilePageModule),
       },
       {
-        path: 'history/:userId',
+        path: 'history',
         loadChildren: () =>
           import('./history/history.module').then((m) => m.HistoryPageModule),
       },
