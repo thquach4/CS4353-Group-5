@@ -25,7 +25,7 @@ export class HistoryComponent implements OnInit {
   getHistoryData() {
     
     
-    this.http.get('http://127.0.0.1:1234/quote-history/' + this.userId)
+    this.http.get('http://127.0.0.1:1234/get/history/' + this.userId)
       .subscribe(
         (data: any) => {
           console.log('Received history data.');
