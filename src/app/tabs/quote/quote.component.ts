@@ -49,7 +49,7 @@ export class QuotePageComponent {
           // Handle the error if needed
         }
       );
-      console.log("QuotePageComponent - ionViewWillEnter")
+      
   }
   onSave() {
     console.log('delivery_address:', this.delivery_address);

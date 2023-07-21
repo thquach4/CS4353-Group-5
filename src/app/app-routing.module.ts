@@ -4,6 +4,7 @@ import { HomepageComponent } from './homepage/homepage.component';
 import { LoginComponent } from './login/login.component';
 import { InfoPageComponent } from './info/info.component';
 
+
 /**
  * In this file we set up the main routes within our application
  * We have multiple options available to us for routing
