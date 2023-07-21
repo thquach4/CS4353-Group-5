@@ -14,7 +14,7 @@
 
       <ion-item>
         <ion-label position="stacked">Delivery Address</ion-label>
-        <ion-input [value]="clientAddress" (ionChange)="onAddressChange($event)"></ion-input>
+        <ion-input [value]="delivery_address" (ionChange)="onAddressChange($event)"></ion-input>
       </ion-item>      
 
       <ion-item>
@@ -31,6 +31,9 @@
         <ion-label position="stacked">Total Amount Due</ion-label>
         <ion-input type="number" readonly></ion-input>
       </ion-item>
+
+      <ion-button type="submit">Submit Quote</ion-button>
+      
     </ion-list>
   </div>
 </ion-content>
