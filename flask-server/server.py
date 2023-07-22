@@ -175,7 +175,7 @@ def quote():
         return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
 
     quote_uid = random.randint(1, 10000)
-        while History.query.filter_by(id=quote_uid).first():
+    while History.query.filter_by(id=quote_uid).first():
         quote_uid = random.randint(1, 10000)
         
     new_quote = History(
