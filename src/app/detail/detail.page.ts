@@ -28,7 +28,10 @@ export class DetailPage implements OnInit, OnDestroy {
         // Handle the response from the Flask server
         console.log(response);
         if (response['state'] === 'pass') {
-          this.navController.navigateRoot(['/homepage']);
+          // Show the success message here
+          const successMessage = 'You have successfully been registered. Please login.';
+          this.showSuccessMessage(successMessage);
+          this.navController.navigateRoot(['/home']);
         } else {
           this.warn(response['message']);
         }
@@ -39,7 +42,22 @@ export class DetailPage implements OnInit, OnDestroy {
       }
     );
   }
-
+  async showSuccessMessage(message: string) {
+    const alert = await this.alertController.create({
+      header: 'Registration Successful',
+      message: message,
+      buttons: [
+        {
+          text: 'OK',
+          handler: () => {
+            // Handle the OK button action if needed
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+  
   async warn(message: string) {
     const confirm = await this.alertController.create({
       header: 'Error',
@@ -49,7 +67,7 @@ export class DetailPage implements OnInit, OnDestroy {
           text: 'Cancel',
           role: 'cancel',
           handler: () => {
-            this.navController.navigateRoot(['/homepage']);
+            this.navController.navigateRoot(['/home']);
           },
         },
         {
