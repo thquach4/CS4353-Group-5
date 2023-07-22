@@ -1,39 +1,43 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Get Quote</ion-title>
+    <ion-title>Get a Quote</ion-title>
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
-  <div class="example-content">
-    <ion-list>
-      <ion-item>
-        <ion-label position="stacked">Gallons Requested</ion-label>
-        <ion-input type="number" required></ion-input>
-      </ion-item>
+  <ion-item>
+    <ion-label>Street Address</ion-label>
+    <ion-input type="text" [(ngModel)]="street_address"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>City</ion-label>
+    <ion-input type="text" [(ngModel)]="city"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>State</ion-label>
+    <ion-input type="text" [(ngModel)]="state"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Zip Code</ion-label>
+    <ion-input type="text" [(ngModel)]="zip_code"></ion-input>
+  </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Delivery Address</ion-label>
-        <ion-input [value]="delivery_address" (ionChange)="onAddressChange($event)"></ion-input>
-      </ion-item>      
+  <ion-item>
+    <ion-label>Gallons Requested</ion-label>
+    <ion-input type="number" [(ngModel)]="gallons_requested"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Delivery Date</ion-label>
+    <ion-input type="date" [(ngModel)]="delivery_date"></ion-input>
+  </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Delivery Date</ion-label>
-        <ion-datetime display-format="MMM DD, YYYY" picker-format="MMM DD, YYYY"></ion-datetime>
-      </ion-item>
+  <ion-item>
+    <ion-label>Suggested Price/Gallon</ion-label>
+    <ion-input type="text" [value]="suggested_price | currency:'USD':'symbol':'1.2-2'"></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>Total Amount Due</ion-label>
+    <ion-input type="text" [value]="total_amount | currency:'USD':'symbol':'1.2-2'"></ion-input>
+  </ion-item>
 
-      <ion-item>
-        <ion-label position="stacked">Suggested Price / gallon</ion-label>
-        <ion-input type="number" readonly></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="stacked">Total Amount Due</ion-label>
-        <ion-input type="number" readonly></ion-input>
-      </ion-item>
-
-      <ion-button type="submit">Submit Quote</ion-button>
-      
-    </ion-list>
-  </div>
+  <ion-button expand="full" (click)="onSubmitQuote()">Submit Quote</ion-button>
 </ion-content>

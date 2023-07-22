@@ -15,6 +15,8 @@ import { InfoPageComponent } from './info/info.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
+import { QuoteHistoryService } from './tabs/quote/quote-history.service'; // Import the service
+
 @NgModule({
   declarations: [AppComponent, LoginComponent, InfoPageComponent],
   entryComponents: [],
@@ -30,6 +32,7 @@ import { HttpClientModule } from '@angular/common/http';
     StatusBar,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
+        QuoteHistoryService, // Add the QuoteHistoryService to providers at the root level
   ],
   bootstrap: [AppComponent],
 })

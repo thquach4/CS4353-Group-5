@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 import re
 import random
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
@@ -164,49 +165,50 @@ class History(db.Model):
 @app.route('/register/user/quote', methods=['POST'])
 def quote():
     data = request.get_json()
+
     delivery_address = data.get('delivery_address', None)
     gallons_requested = data.get('gallons_requested', None)
-    delivery_date = data.get('delivery_date', None)
-    suggested_price = data.get('suggested_price', None)
-    total_amount = data.get('total_amount', None)
+    delivery_date_str = data.get('delivery_date', None)  # Get date string
+
+    # Convert date string to Python date object
+    delivery_date = datetime.strptime(delivery_date_str, '%Y-%m-%d').date()
 
     # Check if any of the attributes are None
-    if delivery_address is None or gallons_requested is None or delivery_date is None or suggested_price is None or total_amount is None:
+    if delivery_address is None or gallons_requested is None or delivery_date is None:
         return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
+
+    # Calculate suggested_price and total_amount (temporary hardcoded values)
+    suggested_price = 2.5  # Replace with your temporary value for suggested_price
+    total_amount = 50.0    # Replace with your temporary value for total_amount
 
     quote_uid = random.randint(1, 10000)
     while History.query.filter_by(id=quote_uid).first():
         quote_uid = random.randint(1, 10000)
-        
+
     new_quote = History(
         delivery_address=delivery_address,
         gallons_requested=gallons_requested,
         delivery_date=delivery_date,
         suggested_price=suggested_price,
         total_amount=total_amount,
-        id = quote_uid
-        )
+        id=quote_uid
+    )
     db.session.add(new_quote)
     db.session.commit()
 
-    
-    # Return a success message if everything is processed successfully
-    return jsonify({'message': 'User\'s quote has been registered successfully.'}), 200
+    # Return the modified data with the calculated values and the new quote ID
+    return jsonify({'message': 'User\'s quote has been registered successfully.', 'quote_id': quote_uid, 'data': data}), 200
 
-@app.route('/get/history/<quote_id>')
-def quote_history(quote_id):
-    history = History.query.get(quote_id)
+@app.route('/get/history/<uid>')
+def get_history_data(uid):
+    history = History.query.filter_by(id=uid).first()
     if history:
         return jsonify({
-            'history': [
-                {
-                    'delivery_address': history.delivery_address,
-                    'gallons_requested': history.gallons_requested,
-                    'delivery_date': history.delivery_date,
-                    'suggested_price': history.suggested_price,
-                    'total_amount': history.total_amount,
-                }
-            ]
+            'delivery_address': history.delivery_address,
+            'gallons_requested': history.gallons_requested,
+            'delivery_date': history.delivery_date.strftime('%Y-%m-%d'),  # Convert date object to string
+            'suggested_price': history.suggested_price,
+            'total_amount': history.total_amount
         })
     else:
         return jsonify({'error': 'History not found'})
@@ -290,24 +292,3 @@ def create_user(
 if __name__ == '__main__':
     inject_fake_data()
     app.run(host='127.0.0.1', port=1234, debug=True)
-
-
-# Frontend issues:
-#   1. Quote submission is not linkeed to any button, so there is no way to submit the quote ot BE
-#   2. Histroy page is having some issues compiling the results from BE
-        # core.js:4197 ERROR Error: Cannot find a differ supporting object '[object Object]' of type 'object'. NgFor only supports binding to Iterables such as Arrays.
-        #     at NgForOf.ngDoCheck (common.js:3191:1)
-        #     at callHook (core.js:3042:1)
-        #     at callHooks (core.js:3008:1)
-        #     at executeCheckHooks (core.js:2941:1)
-        #     at refreshView (core.js:7181:1)
-        #     at refreshComponent (core.js:8326:1)
-        #     at refreshChildComponents (core.js:6965:1)
-        #     at refreshView (core.js:7222:1)
-        #     at refreshEmbeddedViews (core.js:8280:1)
-        #     at refreshView (core.js:7196:1)
-#   3. Histroy page has a hardcoded user id, which is incorrect
-
-# backend issues
-#   1. We shouldn't introduce the foreign relationship because it breaks the compilation (you should be able to compile the codes on Windows)
-#   2. Histroy DB is not reciving data from user because we don't have submission from FE

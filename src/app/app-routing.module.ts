@@ -3,18 +3,8 @@ import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
 import { HomepageComponent } from './homepage/homepage.component';
 import { LoginComponent } from './login/login.component';
 import { InfoPageComponent } from './info/info.component';
-
-
-/**
- * In this file we set up the main routes within our application
- * We have multiple options available to us for routing
- *
- * Route to a specific component
- * Route to a lazy-loaded module
- * Redirect to a predefined route
- *
- * We can see an example of each below
- */
+import { QuotePageComponent } from './tabs/quote/quote.component'; // Import the QuoteComponent
+import { HistoryComponent } from './tabs/history/history.component'; // Import the QuoteComponent
 
 const routes: Routes = [
   { path: 'info', component: InfoPageComponent },
@@ -40,6 +30,15 @@ const routes: Routes = [
     path: 'tabs',
     loadChildren: () =>
       import('./tabs/tabs.module').then((m) => m.TabsPageModule),
+  },
+  // Add the route for the Quote page with a dynamic user ID parameter
+  {
+    path: 'quote/:userId',
+    component: QuotePageComponent,
+  },
+  {
+    path: 'tabs/history/:userId', // Update the route to accept the user ID as a parameter
+    component: HistoryComponent,
   },
 ];
 

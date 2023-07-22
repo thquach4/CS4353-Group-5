@@ -20,18 +20,3 @@ import { HistoryComponent } from './history.component';
   exports: [HistoryComponent],
 })
 export class HistoryPageModule {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

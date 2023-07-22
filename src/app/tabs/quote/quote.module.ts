@@ -22,7 +22,3 @@ import { QuotePageComponent } from './quote.component';
   exports: [QuotePageComponent],
 })
 export class QuotePageModule {}
-
-
-
-
