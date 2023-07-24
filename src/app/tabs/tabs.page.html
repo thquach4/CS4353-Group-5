@@ -8,9 +8,9 @@
       <ion-icon name="pricetag-outline"></ion-icon>
       Quote
     </ion-tab-button>
-    <ion-tab-button tab="history">
+    <ion-tab-button tab="history" [routerLink]="['/tabs/history', userId]">
       <ion-icon name="receipt-outline"></ion-icon>
       History
-    </ion-tab-button>
+    </ion-tab-button>      
   </ion-tab-bar>
 </ion-tabs>
