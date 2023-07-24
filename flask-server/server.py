@@ -9,14 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
 db = SQLAlchemy(app)
 CORS(app)
-# ==================== states table code ==========================
-class State(db.Model):
-    __tablename__ = 'states'
 
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(50), nullable=False)
-    abbreviation = db.Column(db.String(2), nullable=False)
-# ================== end states table code ========================
 # ================ login and profile related codes ================
 
 class Login(db.Model):
@@ -35,10 +28,8 @@ class User(db.Model):
     address2 = db.Column(db.String(255))
     city = db.Column(db.String(255))
     state = db.Column(db.String(255))
-    # state_id = db.Column(db.Integer, db.ForeignKey('states.id')) # foreignkey inserted for state table to be connected to User
     zipcode = db.Column(db.String(5))
 
-    # state = db.relationship('State', backref=db.backref('users')) # create relationship to user table
 
 @app.route('/register/user', methods=['POST'])
 def register_user():
@@ -152,6 +143,11 @@ def update_user_profile(uid):
     
 # ================ END OF login and profile related codes ================
 
+# ================ history and quote related codes =================================
+# Helper function to check if the user has rate history (replace with actual implementation based on user authentication)
+def has_rate_history(uid):
+    return True
+
 class History(db.Model):
     __tablename__ = 'History'
 
@@ -161,76 +157,92 @@ class History(db.Model):
     delivery_date = db.Column(db.Date, nullable=False)
     suggested_price = db.Column(db.Float, nullable=False)
     total_amount = db.Column(db.Float, nullable=False)
-    
+
 @app.route('/register/user/quote', methods=['POST'])
 def quote():
     data = request.get_json()
-
     delivery_address = data.get('delivery_address', None)
     gallons_requested = data.get('gallons_requested', None)
-    delivery_date_str = data.get('delivery_date', None)  # Get date string
-
-    # Convert date string to Python date object
-    delivery_date = datetime.strptime(delivery_date_str, '%Y-%m-%d').date()
+    delivery_date = data.get('delivery_date', None)
+    state = data.get('state', '').lower()  # Get the state and convert to lowercase
 
     # Check if any of the attributes are None
     if delivery_address is None or gallons_requested is None or delivery_date is None:
         return jsonify({'error': 'One or more attributes are missing in the user\'s quote.'}), 400
 
-    # Calculate suggested_price and total_amount (temporary hardcoded values)
-    suggested_price = 2.5  # Replace with your temporary value for suggested_price
-    total_amount = 50.0    # Replace with your temporary value for total_amount
+# ===================== pricing module ==========================================
+    # Calculate the suggested price and total amount
+    current_price_per_gallon = 1.50
+    location_factor = 0.02 if state == 'tx' else 0.04  # Use the state information here
+    rate_history_factor = 0.01 if has_rate_history(data.get('userId')) else 0.00
+    gallons_requested_factor = 0.02 if gallons_requested > 1000 else 0.03
+    company_profit_factor = 0.10
 
-    quote_uid = random.randint(1, 10000)
-    while History.query.filter_by(id=quote_uid).first():
-        quote_uid = random.randint(1, 10000)
+    margin = (
+        location_factor
+        - rate_history_factor
+        + gallons_requested_factor
+        + company_profit_factor
+    ) * current_price_per_gallon
+
+    suggested_price = current_price_per_gallon + margin
+    total_amount = suggested_price * gallons_requested
+# ======================== end pricing module related code ========================
+  
+    # Create a new quote history record in the database
+    quote_id = random.randint(1, 10000)
+    while History.query.filter_by(id=quote_id).first():
+        quote_id = random.randint(1, 10000)
 
     new_quote = History(
+        id=quote_id,
         delivery_address=delivery_address,
         gallons_requested=gallons_requested,
-        delivery_date=delivery_date,
+        delivery_date=datetime.strptime(delivery_date, '%Y-%m-%d').date(),
         suggested_price=suggested_price,
         total_amount=total_amount,
-        id=quote_uid
     )
     db.session.add(new_quote)
     db.session.commit()
 
-    # Return the modified data with the calculated values and the new quote ID
-    return jsonify({'message': 'User\'s quote has been registered successfully.', 'quote_id': quote_uid, 'data': data}), 200
+    # Return the suggested price and total amount in the response
+    response = {
+        'message': "User's quote has been registered successfully.",
+        'suggested_price': suggested_price,
+        'total_amount': total_amount,
+        'quote_id': quote_id,
+    }
+    return jsonify(response), 200
 
-@app.route('/get/history/<uid>')
-def get_history_data(uid):
-    history = History.query.filter_by(id=uid).first()
+
+@app.route('/get/history/<quote_id>')
+def get_quote_history(quote_id):
+    if quote_id.lower() == 'null':
+        return jsonify({'error': 'Quote ID is missing or invalid.'}), 400
+
+    try:
+        quote_id_int = int(quote_id)
+    except ValueError:
+        return jsonify({'error': 'Invalid Quote ID. Please provide a valid integer ID.'}), 400
+
+    history = History.query.get(quote_id_int)
     if history:
         return jsonify({
-            'delivery_address': history.delivery_address,
-            'gallons_requested': history.gallons_requested,
-            'delivery_date': history.delivery_date.strftime('%Y-%m-%d'),  # Convert date object to string
-            'suggested_price': history.suggested_price,
-            'total_amount': history.total_amount
+            'history': [
+                {
+                    'delivery_address': history.delivery_address,
+                    'gallons_requested': history.gallons_requested,
+                    'delivery_date': history.delivery_date.strftime('%Y-%m-%d'),
+                    'suggested_price': history.suggested_price,
+                    'total_amount': history.total_amount,
+                }
+            ]
         })
     else:
-        return jsonify({'error': 'History not found'})
+        return jsonify({'error': 'History not found'}), 404
 
-# class PricingModule:
-#     def __init__(self, base_price):
-#         self.base_price = base_price
-    
-#     # TODO: Implement pricing calculations based on assignment requirements
+# =================== END of history and quote related codes ===================
 
-#     pricing_module = PricingModule(base_price=10.0)  # Set the base price as needed
-
-#     # TODO: Use the pricing module to calculate the total amount
-#     total_amount = pricing_module.calculate_total_amount()
-
-#     # Create an instance of QuoteHistory and add the quote
-#     quote_history.add_quote(gallons_requested, delivery_address, delivery_date, suggested_price, total_amount)
-
-#     # Return a response to the client
-#     return jsonify({'state': 'success'})
-
- 
 def inject_fake_data():
     # Sample user data
     user_data = {
@@ -288,6 +300,48 @@ def create_user(
         state=uState,
         zipcode=uZipCode
     )
+
+
+# Function to inject fake data for quote history
+def inject_fake_quote_history():
+    # Sample quote history data
+    quote_history_data = {
+        '1000': {
+            'delivery_address': '456 ABC St',
+            'gallons_requested': 100,
+            'delivery_date': '2023-07-22',
+            'suggested_price': 2.8,
+            'total_amount': 280.0,
+        },
+        '1001': {
+            'delivery_address': '789 XYZ St',
+            'gallons_requested': 150,
+            'delivery_date': '2023-07-23',
+            'suggested_price': 2.6,
+            'total_amount': 390.0,
+        },
+    }
+
+    # Inject fake data into the database
+    with app.app_context():
+        db.create_all()
+        for id in quote_history_data:
+            if History.query.get(id):
+                continue
+            quote = History(
+                id=id,
+                delivery_address=quote_history_data[id]['delivery_address'],
+                gallons_requested=quote_history_data[id]['gallons_requested'],
+                delivery_date=datetime.strptime(quote_history_data[id]['delivery_date'], '%Y-%m-%d').date(),
+                suggested_price=quote_history_data[id]['suggested_price'],
+                total_amount=quote_history_data[id]['total_amount'],
+            )
+            db.session.add(quote)
+        db.session.commit()
+
+@app.route('/')
+def root():
+    return "Flask server is running!"
 
 if __name__ == '__main__':
     inject_fake_data()

@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { UserIdService } from '../shared/user-id.service';
 
 @Component({
   selector: 'tabs',
@@ -7,7 +8,15 @@ import { Router } from '@angular/router';
   styleUrls: ['tabs.page.scss'],
 })
 export class TabsPage implements OnInit, OnDestroy {
-  constructor(private router: Router) {}
+  userId: string;
+  constructor(private router: Router, private userIdService: UserIdService) {}
+  setUserId(userId: string) {
+    this.userIdService.setUserId(userId);
+  }
+
+  navigateToHistory() {
+    this.router.navigateByUrl(`/tabs/history`);
+  }
 
   goBack() {
     this.router.navigate(['/home']);

@@ -14,12 +14,11 @@ import { LoginComponent } from './login/login.component';
 import { InfoPageComponent } from './info/info.component';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-
-import { QuoteHistoryService } from './tabs/quote/quote-history.service'; // Import the service
+import { UserIdService } from './shared/user-id.service'; // Import the UserIdService
 
 @NgModule({
-  declarations: [AppComponent, LoginComponent, InfoPageComponent],
-  entryComponents: [],
+  declarations: [AppComponent, LoginComponent],
+
   imports: [
     BrowserModule,
     IonicModule.forRoot(),
@@ -31,8 +30,8 @@ import { QuoteHistoryService } from './tabs/quote/quote-history.service'; // Imp
   providers: [
     StatusBar,
     SplashScreen,
+    UserIdService,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-        QuoteHistoryService, // Add the QuoteHistoryService to providers at the root level
   ],
   bootstrap: [AppComponent],
 })

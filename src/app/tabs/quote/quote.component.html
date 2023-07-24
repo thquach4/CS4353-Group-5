@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Get a Quote</ion-title>
+    <ion-title>Get Quote</ion-title>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -12,10 +12,16 @@
     <ion-label>City</ion-label>
     <ion-input type="text" [(ngModel)]="city"></ion-input>
   </ion-item>
+  <!-- Replace the State input with an ion-select dropdown -->
   <ion-item>
     <ion-label>State</ion-label>
-    <ion-input type="text" [(ngModel)]="state"></ion-input>
+    <ion-select [(ngModel)]="state" (ionChange)="onStateChange($event)">
+      <ion-select-option *ngFor="let state of states" [value]="state.abbreviation">
+        {{ state.name }}
+      </ion-select-option>
+    </ion-select>
   </ion-item>
+
   <ion-item>
     <ion-label>Zip Code</ion-label>
     <ion-input type="text" [(ngModel)]="zip_code"></ion-input>
@@ -32,12 +38,13 @@
 
   <ion-item>
     <ion-label>Suggested Price/Gallon</ion-label>
-    <ion-input type="text" [value]="suggested_price | currency:'USD':'symbol':'1.2-2'"></ion-input>
+    <ion-input type="text" [(ngModel)]="suggested_price" [value]="suggested_price | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Total Amount Due</ion-label>
-    <ion-input type="text" [value]="total_amount | currency:'USD':'symbol':'1.2-2'"></ion-input>
+    <ion-input type="text" [(ngModel)]="total_amount" [value]="total_amount | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
   </ion-item>
+  
+  <ion-button expand="full" (click)="onSubmitQuote()">Submit Quote</ion-button>  
 
-  <ion-button expand="full" (click)="onSubmitQuote()">Submit Quote</ion-button>
 </ion-content>
