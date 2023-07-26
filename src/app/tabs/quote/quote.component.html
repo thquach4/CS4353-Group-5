@@ -38,13 +38,14 @@
 
   <ion-item>
     <ion-label>Suggested Price/Gallon</ion-label>
-    <ion-input type="text" [(ngModel)]="suggested_price" [value]="suggested_price | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
+    <ion-input type="number" [(ngModel)]="suggested_price" [value]="suggested_price | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
   </ion-item>
   <ion-item>
     <ion-label>Total Amount Due</ion-label>
-    <ion-input type="text" [(ngModel)]="total_amount" [value]="total_amount | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
+    <ion-input type="number" [(ngModel)]="total_amount" [value]="total_amount | currency:'USD':'symbol':'1.2-2'" readonly></ion-input>
   </ion-item>
   
-  <ion-button expand="full" (click)="onSubmitQuote()">Submit Quote</ion-button>  
-
+  <ion-button type="button" (click)="getQuote()" [disabled]="isFormEmpty()">Get Quote</ion-button>
+  <ion-button type="submit" [disabled]="isFormEmpty()">Submit Quote</ion-button>
+  
 </ion-content>

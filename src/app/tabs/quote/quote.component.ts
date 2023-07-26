@@ -83,7 +83,7 @@ export class QuotePageComponent {
     this.state = event.detail.value;
   }  
 
-  onSubmitQuote() {
+  getQuote() {
     // Check if any required field is empty
     if (!this.street_address || !this.city || !this.state || !this.zip_code || !this.gallons_requested || !this.delivery_date) {
       this.presentAlert('Error', 'Please fill in all required fields.');
@@ -100,40 +100,27 @@ export class QuotePageComponent {
       delivery_date: this.delivery_date,
     };
   
-    // Calculate the suggested price and total amount
+    // Make a call to the Pricing Module API to get the suggested price and total amount
     this.http.post('http://127.0.0.1:1234/register/user/quote', quoteData).subscribe(
       (data: any) => {
-        console.log('Quote submitted successfully.');
+        console.log('Quote fetched successfully.');
         console.log(data);
   
         // Set the suggested price and total amount to display on the page
         this.suggested_price = data.suggested_price;
         this.total_amount = data.total_amount;
-  
-        // Optionally, you can clear the form fields after successful submission
-        this.street_address = '';
-        this.city = '';
-        this.state = '';
-        this.zip_code = '';
-        this.gallons_requested = null;
-        this.delivery_date = '';
-
-        // Get the userId from the response data (assuming the API returns it)
-        const userId = data.userId; // Replace 'userId' with the actual key from the API response
-
-        // Set the userId in the UserIdService
-        this.userIdService.setUserId(userId);
-
-        // Navigate to the History page with the userId as a query parameter
-        this.router.navigate(['/tabs/history'], { queryParams: { userId } });
       },
       (error: any) => {
-        console.log('Error submitting quote.');
+        console.log('Error fetching quote.');
         console.error(error);
         // Handle the error if needed
       }
     );
   }
+
+  isFormEmpty(): boolean {
+    return !this.street_address || !this.city || !this.state || !this.zip_code || !this.gallons_requested || !this.delivery_date;
+  }  
 
   async presentAlert(header: string, message: string) {
     const alert = await this.alertController.create({
