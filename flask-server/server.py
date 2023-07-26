@@ -187,6 +187,7 @@ def quote():
 
     suggested_price = current_price_per_gallon + margin
     total_amount = suggested_price * gallons_requested
+    company_profit = total_amount * company_profit_factor
 # ======================== end pricing module related code ========================
   
     # Create a new quote history record in the database
