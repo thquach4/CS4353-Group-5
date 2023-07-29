@@ -4,3 +4,4 @@ homebrew
 */instance
 *.coverage
 *.pyc
+.angular/
