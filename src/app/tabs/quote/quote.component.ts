@@ -98,6 +98,7 @@ export class QuotePageComponent {
       delivery_address: `${this.street_address}, ${this.city}, ${this.state} ${this.zip_code}`,
       gallons_requested: this.gallons_requested,
       delivery_date: this.delivery_date,
+      user_id: this.userIdService.getUserId(),
     };
   
     // Make a call to the Pricing Module API to get the suggested price and total amount

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { UserIdService } from '../../shared/user-id.service';
 
 @Component({
@@ -13,21 +12,18 @@ export class HistoryComponent implements OnInit {
 
   constructor(
     private http: HttpClient,
-    private route: ActivatedRoute, // Add ActivatedRoute to the constructor
     private userIdService: UserIdService
   ) {}
 
-
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      this.userId = params.get('userId');
-      this.getHistoryData();
-    });
+    console.log("HistoryComponent ngOnInit");
+    this.getHistoryData()
   }  
 
   getHistoryData() {
-    if (this.userId) {
-      this.http.get(`http://127.0.0.1:1234/get/history/${this.userId}`)
+    if (this.userIdService.getUserId() != null) {
+      this.userId = this.userIdService.getUserId();
+      this.http.get("http://127.0.0.1:1234/get/history/" + this.userId)
         .subscribe(
           (data: any) => {
             console.log('Received history data:', data);
@@ -43,5 +39,9 @@ export class HistoryComponent implements OnInit {
     } else {
       console.log('User ID is not available.');
     }
-  }   
+  }
+
+  refresh() {
+    this.getHistoryData();
+  }
 }

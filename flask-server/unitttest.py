@@ -132,12 +132,12 @@ class FlaskAppTests(unittest.TestCase):
     
     def test_register_user_quote(self):
         data = {
-        'delivery_address': '123 Test St',
-        'gallons_requested': 100,
-        'delivery_date': '2023-07-21',
-        'suggested_price': 3.5,
-        'total_amount': 350,
-    }
+            'delivery_address': '123 Test St',
+            'gallons_requested': 100,
+            'delivery_date': '2023-07-21',
+            'suggested_price': 3.5,
+            'total_amount': 350,
+        }
         response = self.app.post('/register/user/quote', json=data)
         data = response.get_json()
         self.assertEqual(response.status_code, 200)
@@ -149,15 +149,13 @@ class FlaskAppTests(unittest.TestCase):
             'delivery_address': '123 Test St',
             'gallons_requested': 100,
             'delivery_date': '2023-07-21',
-            'suggested_price': 3.5,
-            'total_amount': 350,
+            'user_id': 9999
         }
         response = self.app.post('/register/user/quote', json=data)
         data = response.get_json()
-        quote_id = data['id']
 
         # Test retrieving the quote history using the quote_id
-        response = self.app.get(f'/get/history/{quote_id}')
+        response = self.app.get(f'/get/history/9999')
         data = response.get_json()
         self.assertEqual(response.status_code, 200)
         self.assertIn('history', data)
@@ -168,8 +166,8 @@ class FlaskAppTests(unittest.TestCase):
         self.assertEqual(quote_data['delivery_address'], '123 Test St')
         self.assertEqual(quote_data['gallons_requested'], 100)
         self.assertEqual(quote_data['delivery_date'], '2023-07-21')
-        self.assertEqual(quote_data['suggested_price'], 3.5)
-        self.assertEqual(quote_data['total_amount'], 350)
+        self.assertEqual(quote_data['suggested_price'], 1.755)
+        self.assertEqual(quote_data['total_amount'], 175.5)
 
     def test_get_quote_history_nonexistent_quote(self):
         # Test retrieving a quote that does not exist
@@ -179,5 +177,5 @@ class FlaskAppTests(unittest.TestCase):
         self.assertIn('error', data)
         self.assertEqual(data['error'], 'History not found')
 
-    if __name__ == '__main__':
-        unittest.main()
+if __name__ == '__main__':
+    unittest.main()

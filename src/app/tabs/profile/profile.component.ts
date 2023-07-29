@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NavController } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
+import { UserIdService } from '../../shared/user-id.service';
 
 @Component({
   selector: 'tabs-profile-page',
@@ -9,7 +10,7 @@ import { ActivatedRoute } from '@angular/router';
   styleUrls: ['./profile.component.scss'],
 })
 export class ProfilePageComponent implements OnInit {
-  constructor(private navController: NavController, private http: HttpClient, private route: ActivatedRoute) {}
+  constructor(private navController: NavController, private http: HttpClient, private route: ActivatedRoute, private userIdService: UserIdService) {}
   
   profileArray: any;
   userId = "1000";
@@ -19,7 +20,7 @@ export class ProfilePageComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.userId = params['uid'];
       console.log('User ID:', this.userId);
-      // Use the user ID as needed in your page logic
+      this.userIdService.setUserId(this.userId);
     });
 
     this.http.get("http://127.0.0.1:1234/get/profile/" + this.userId)

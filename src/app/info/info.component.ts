@@ -26,7 +26,7 @@ export class InfoPageComponent {
       // Use the user ID as needed in your page logic
     });
 
-    this.http.get("http://127.0.0.1:1234/user/" + this.userId)
+    this.http.get("http://127.0.0.1:1234/get/profile/" + this.userId)
       .subscribe(
         data => {
           console.log("Successfully received data.");

@@ -8,11 +8,7 @@ import { UserIdService } from '../shared/user-id.service';
   styleUrls: ['tabs.page.scss'],
 })
 export class TabsPage implements OnInit, OnDestroy {
-  userId: string;
-  constructor(private router: Router, private userIdService: UserIdService) {}
-  setUserId(userId: string) {
-    this.userIdService.setUserId(userId);
-  }
+  constructor(private router: Router) {}
 
   navigateToHistory() {
     this.router.navigateByUrl(`/tabs/history`);

@@ -6,8 +6,6 @@ import { TabsPage } from './tabs.page';
 
 import { TabsPageRoutingModule } from './tabs-routing.module';
 
-import { UserIdService } from '../shared/user-id.service';
-
 @NgModule({
   imports: [CommonModule, FormsModule, IonicModule, TabsPageRoutingModule],
   declarations: [TabsPage],
